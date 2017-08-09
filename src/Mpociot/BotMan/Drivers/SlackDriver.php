@@ -26,7 +26,7 @@ class SlackDriver extends Driver
          * If the request has a POST parameter called 'payload'
          * we're dealing with an interactive button response.
          */
-        if (! is_null($request->get('payload'))) {
+        if (!is_null($request->get('payload'))) {
             $payloadData = json_decode($request->get('payload'), true);
 
             $this->payload = Collection::make($payloadData);
@@ -34,11 +34,11 @@ class SlackDriver extends Driver
                 'channel' => $payloadData['channel']['id'],
                 'user' => $payloadData['user']['id'],
             ]);
-        } elseif (! is_null($request->get('team_domain'))) {
+        } elseif (!is_null($request->get('team_domain'))) {
             $this->payload = $request->request;
             $this->event = Collection::make($request->request->all());
         } else {
-            $this->payload = new ParameterBag((array) json_decode($request->getContent(), true));
+            $this->payload = new ParameterBag((array)json_decode($request->getContent(), true));
             $this->event = Collection::make($this->payload->get('event'));
         }
     }
@@ -50,7 +50,7 @@ class SlackDriver extends Driver
      */
     public function matchesRequest()
     {
-        return ! is_null($this->event->get('user')) || ! is_null($this->event->get('team_domain'));
+        return !is_null($this->event->get('user')) || !is_null($this->event->get('team_domain'));
     }
 
     /**
@@ -78,10 +78,10 @@ class SlackDriver extends Driver
     public function getMessages()
     {
         $messageText = '';
-        if (! $this->payload instanceof Collection) {
+        if (!$this->payload instanceof Collection) {
             $messageText = $this->event->get('text');
             if ($this->isSlashCommand()) {
-                $messageText = $this->event->get('command').' '.$messageText;
+                $messageText = $this->event->get('command') . ' ' . $messageText;
             }
         }
 
@@ -122,7 +122,7 @@ class SlackDriver extends Driver
      */
     public function reply($message, $matchingMessage, $additionalParameters = [])
     {
-        if (! Collection::make($matchingMessage->getPayload())->has('team_domain')) {
+        if (!Collection::make($matchingMessage->getPayload())->has('team_domain')) {
             $this->replyWithToken($message, $matchingMessage, $additionalParameters);
         } else {
             $this->respondJSON($message, $matchingMessage, $additionalParameters);
@@ -159,9 +159,13 @@ class SlackDriver extends Driver
             $parameters['attachments'] = json_encode([$message->toArray()]);
         } elseif ($message instanceof IncomingMessage) {
             $parameters['text'] = $message->getMessage();
-            if (! is_null($message->getImage())) {
-                $parameters['attachments'] = json_encode(['image_url' => $message->getImage()]);
+            if (!isset($parameters['attachments'])) {
+                $parameters['attachments'] = [];
             }
+            if (!is_null($message->getImage())) {
+                $parameters['attachments'][] = ['title' => $message->getMessage(), 'image_url' => $message->getImage()];
+            }
+            $parameters['attachments'] = json_encode($parameters['attachments']);
         } else {
             $parameters['text'] = $this->format($message);
         }
@@ -213,7 +217,7 @@ class SlackDriver extends Driver
             $parameters['attachments'] = json_encode([$message->toArray()]);
         } elseif ($message instanceof IncomingMessage) {
             $parameters['text'] = $message->getMessage();
-            if (! is_null($message->getImage())) {
+            if (!is_null($message->getImage())) {
                 $parameters['attachments'] = json_encode(
                     [
                         [
@@ -252,7 +256,7 @@ class SlackDriver extends Driver
      */
     public function isConfigured()
     {
-        return ! is_null($this->config->get('slack_token'));
+        return !is_null($this->config->get('slack_token'));
     }
 
     /**
@@ -279,6 +283,6 @@ class SlackDriver extends Driver
             'token' => $this->config->get('slack_token'),
         ], $parameters);
 
-        return $this->http->post('https://slack.com/api/'.$endpoint, [], $parameters);
+        return $this->http->post('https://slack.com/api/' . $endpoint, [], $parameters);
     }
 }

@@ -138,11 +138,15 @@ class SlackRTMDriver implements DriverInterface
 
         if ($message instanceof IncomingMessage) {
             $parameters['text'] = $message->getMessage();
-            if (! is_null($message->getImage())) {
-                $parameters['attachments'] = json_encode([['title' => $message->getMessage(), 'image_url' => $message->getImage()]]);
+            if (!isset($parameters['attachments'])) {
+                $parameters['attachments'] = [];
             }
+            if (!is_null($message->getImage())) {
+                $parameters['attachments'][] = ['title' => $message->getMessage(), 'image_url' => $message->getImage()];
+            }
+            $parameters['attachments'] = json_encode($parameters['attachments']);
 
-            if (! empty($message->getFilePath()) && file_exists($message->getFilePath())) {
+            if (!empty($message->getFilePath()) && file_exists($message->getFilePath())) {
                 $fileToUpload = (new File())
                     ->setTitle(basename($message->getFilePath()))
                     ->setPath($message->getFilePath())
@@ -182,7 +186,7 @@ class SlackRTMDriver implements DriverInterface
      */
     public function isConfigured()
     {
-        return ! is_null($this->config->get('slack_token'));
+        return !is_null($this->config->get('slack_token'));
     }
 
     /**
@@ -196,7 +200,7 @@ class SlackRTMDriver implements DriverInterface
             $channel = $_channel;
         });
 
-        if (! is_null($channel)) {
+        if (!is_null($channel)) {
             $this->client->setAsTyping($channel, false);
         }
     }
@@ -212,7 +216,7 @@ class SlackRTMDriver implements DriverInterface
         $this->client->getUserById($matchingMessage->getUser())->then(function ($_user) use (&$user) {
             $user = $_user;
         });
-        if (! is_null($user)) {
+        if (!is_null($user)) {
             return new User($matchingMessage->getUser(), $user->getFirstName(), $user->getLastName(), $user->getUsername());
         }
 
