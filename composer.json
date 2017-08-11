@@ -1,7 +1,7 @@
 {
   "name": "professionalweb/botman",
   "license": "MIT",
-  "version": "1.5.11",
+  "version": "1.5.10",
   "description": "Create messaging bots in PHP with ease.",
   "keywords": [
     "Bot",
