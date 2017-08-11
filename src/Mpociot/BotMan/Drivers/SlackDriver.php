@@ -217,16 +217,17 @@ class SlackDriver extends Driver
             $parameters['attachments'] = json_encode([$message->toArray()]);
         } elseif ($message instanceof IncomingMessage) {
             $parameters['text'] = $message->getMessage();
-            if (!is_null($message->getImage())) {
-                $parameters['attachments'] = json_encode(
-                    [
-                        [
-                            'title' => $message->getImage(),
-                            'image_url' => $message->getImage(),
-                        ],
-                    ]
-                );
+            if (!isset($parameters['attachments'])) {
+                $parameters['attachments'] = [];
             }
+            if (!is_null($message->getImage())) {
+                $parameters['attachments'][] =
+                    [
+                        'title' => $message->getImage(),
+                        'image_url' => $message->getImage(),
+                    ];
+            }
+            $parameters['attachments'] = json_encode($parameters['attachments']);
         } else {
             $parameters['text'] = $this->format($message);
         }
