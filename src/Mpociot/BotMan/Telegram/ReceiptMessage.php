@@ -122,8 +122,10 @@ class ReceiptMessage extends Message
             'start_parameter'       => $this->getDeepLinkingCommand(),
             'currency'              => $this->getCurrency(),
             'prices'                => [
-                'label'  => $this->getPriceLabel(),
-                'amount' => Invoice::preparePrice($this->getPriceLabel(), $this->getPriceExp()),
+                [
+                    'label'  => $this->getPriceLabel(),
+                    'amount' => Invoice::preparePrice($this->getPriceLabel(), $this->getPriceExp()),
+                ],
             ],
             'photo_url'             => $this->getImage(),
             'need_name'             => $this->isNeedName(),
