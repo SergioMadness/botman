@@ -1,4 +1,4 @@
-<?php namespace Mpociot\BotMan;
+<?php namespace Mpociot\BotMan\Telegram;
 
 use Mpociot\BotMan\Messages\Message;
 
