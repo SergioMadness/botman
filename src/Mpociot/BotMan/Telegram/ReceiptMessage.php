@@ -121,12 +121,12 @@ class ReceiptMessage extends Message
             'provider_token'        => $this->getProviderToken(),
             'start_parameter'       => $this->getDeepLinkingCommand(),
             'currency'              => $this->getCurrency(),
-            'prices'                => [
+            'prices'                => json_encode([
                 [
                     'label'  => $this->getPriceLabel(),
                     'amount' => Invoice::preparePrice($this->getPriceLabel(), $this->getPriceExp()),
                 ],
-            ],
+            ]),
             'photo_url'             => $this->getImage(),
             'need_name'             => $this->isNeedName(),
             'need_phone_number'     => $this->isNeedPhoneNumber(),
