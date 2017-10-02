@@ -2,6 +2,7 @@
 
 namespace Mpociot\BotMan\Drivers;
 
+use Mpociot\BotMan\Telegram\PreCheckoutQuery;
 use Mpociot\BotMan\User;
 use Mpociot\BotMan\Answer;
 use Mpociot\BotMan\Message;
@@ -88,6 +89,10 @@ class TelegramDriver extends Driver
             $callback = Collection::make($this->payload->get('callback_query'));
 
             return [new Message($callback->get('data'), $callback->get('from')['id'], $callback->get('message')['chat']['id'], $callback->get('message'))];
+        } elseif (($query = $this->payload->get('pre_checkout_query')) !== null) {
+            $callback = Collection::make($this->payload->get('pre_checkout_query'));
+
+            return [new PreCheckoutQuery($this->payload->get('from')['id'], $this->payload->get('message')['chat']['id'], $callback)];
         } else {
             return [new Message($this->event->get('text'), $this->event->get('from')['id'], $this->event->get('chat')['id'], $this->event)];
         }
